@@ -17,7 +17,8 @@ fluidPage(
                    c("Plurality/First Past the Post" = "plurality", "Instant Runoff/Single Transferable Vote" = "instantRunoff"))
     ),
     mainPanel(
-      tableOutput('winner')
+      textOutput('winner'),
+      plotOutput('summary')
     )
   )
 )

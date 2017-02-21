@@ -1,18 +1,21 @@
 library(shiny)
 
-chooseWinner = function(type,election){
+getResults = function(type,election){
+  if(is.null(election)){
+    return(list(1, 1))
+  }
   return(switch(type,
          plurality = plurality(election),
          instantRunoff = instantRunoff(election)))
 }
 
 plurality = function(election){
-  return(names(sort(summary(as.factor(election[,1])), decreasing = TRUE)[1]))
+  return(list(names(sort(summary(as.factor(election[,1])), decreasing = TRUE)[1]),data.frame(election[,1])))
 }
 
 instantRunoff = function(election){
   #TODO implement this
-  return("this voting scheme not yet implemented")
+  return(list("This voting scheme not yet implemented",1))
 }
 
 getElection = function(inFile){
@@ -26,14 +29,26 @@ function(input, output) {
   reactives <- reactiveValues()
   
   observe(reactives$election <- getElection(input$file1))
+  
+  result <- reactive(
+    getResults(input$electionType,reactives$election)
+  )
+  
   output$winner <-  renderText({
-
-    
-    paste("The winner is: ", chooseWinner(input$electionType,reactives$election))
-
+  if(is.numeric(result()[[1]])){
+    paste("Enter some ballots to see results")
+  }
+  else{
+  paste("The winner is: ", result()[[1]])
+  }
     })
   
-
+  output$summary <- renderPlot({
+    if(!is.numeric(result()[[2]])){
+      switch(input$electionType,
+        plurality = plot(result()[[2]]))
+    }
+  })
     
     
   
