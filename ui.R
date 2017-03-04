@@ -18,7 +18,8 @@ fluidPage(
     ),
     mainPanel(
       textOutput('winner'),
-      plotOutput('summary')
+      plotOutput('summary'),
+      textOutput('warnings')
     )
   )
 )

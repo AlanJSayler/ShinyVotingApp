@@ -9,13 +9,22 @@ getResults = function(type,election){
          instantRunoff = instantRunoff(election)))
 }
 
+containsDuplicateCandidateBallots = function(election){
+
+ if(sum(apply(election, 1, duplicated)) > 0){
+   return(TRUE)
+ }
+ return(FALSE)
+}
+
+
 plurality = function(election){
   return(list(names(sort(summary(as.factor(election[,1])), decreasing = TRUE)[1]),data.frame(election[,1])))
 }
 
 instantRunoff = function(election){
   #TODO implement this
-  return(list("This voting scheme not yet implemented",1))
+  
 }
 
 getElection = function(inFile){
@@ -42,6 +51,12 @@ function(input, output) {
   paste("The winner is: ", result()[[1]])
   }
     })
+  output$warnings <- renderText({
+    if(!is.null(reactives$election) && containsDuplicateCandidateBallots(reactives$election))
+    {
+      paste("One or more ballots voted for a single candidate more than once, analysis may not be correct")
+    }
+  })
   
   output$summary <- renderPlot({
     if(!is.numeric(result()[[2]])){
